@@ -151,6 +151,11 @@ public class MainActivity extends AppCompatActivity implements OnClickableSpanLi
         Toast.makeText(MainActivity.this, "Click Text: " + clickText, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onLongClick(TextView tv, String clickText) {
+        Toast.makeText(MainActivity.this, "LongClick Text: " + clickText, Toast.LENGTH_SHORT).show();
+    }
+
     private float sp2px(float spValue) {
         final float scale = getResources().getDisplayMetrics().scaledDensity;
         return spValue * scale;

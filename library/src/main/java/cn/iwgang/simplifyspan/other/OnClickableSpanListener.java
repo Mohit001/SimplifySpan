@@ -11,4 +11,5 @@ public interface OnClickableSpanListener {
 
     void onClick(TextView tv, String clickText);
 
+    void onLongClick(TextView tv, String clickText);
 }

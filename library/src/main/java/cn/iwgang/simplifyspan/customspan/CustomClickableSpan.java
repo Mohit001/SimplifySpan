@@ -83,4 +83,8 @@ public class CustomClickableSpan extends ClickableSpan {
             ds.setUnderlineText(false);
         }
     }
+
+    public OnClickableSpanListener getOnClickableSpanListener() {
+        return mOnClickableSpanListener;
+    }
 }

@@ -4,6 +4,7 @@ import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -16,6 +17,10 @@ import cn.iwgang.simplifyspan.customspan.CustomClickableSpan;
  * Ref: http://stackoverflow.com/a/20905824
  */
 public class CustomLinkMovementMethod extends LinkMovementMethod {
+
+    private static final long LONG_CLICK_PRESS_DURATION = 500L;
+    private long mLastActionDown;
+
     private static CustomLinkMovementMethod sInstance;
     private CustomClickableSpan mCustomClickableSpan;
 
@@ -29,6 +34,7 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
     @Override
     public boolean onTouchEvent(TextView textView, Spannable spannable, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            mLastActionDown = System.currentTimeMillis();
             mCustomClickableSpan = getPressedSpan(textView, spannable, event);
             if (mCustomClickableSpan != null) {
                 mCustomClickableSpan.setPressed(true);
@@ -44,7 +50,17 @@ public class CustomLinkMovementMethod extends LinkMovementMethod {
         } else {
             if (mCustomClickableSpan != null) {
                 mCustomClickableSpan.setPressed(false);
-                super.onTouchEvent(textView, spannable, event);
+
+                if (System.currentTimeMillis() - mLastActionDown >= LONG_CLICK_PRESS_DURATION) {
+                    int start = spannable.getSpanStart(mCustomClickableSpan);
+                    int end = spannable.getSpanEnd(mCustomClickableSpan);
+                    String clickText = spannable.subSequence(start, end).toString();
+                    if (mCustomClickableSpan != null && mCustomClickableSpan.getOnClickableSpanListener() != null) {
+                        mCustomClickableSpan.getOnClickableSpanListener().onLongClick(textView, clickText);
+                    }
+                } else {
+                    super.onTouchEvent(textView, spannable, event);
+                }
             }
             mCustomClickableSpan = null;
             Selection.removeSelection(spannable);
